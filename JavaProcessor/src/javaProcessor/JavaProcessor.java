@@ -198,7 +198,8 @@ public class JavaProcessor extends JFrame implements ActionListener {
 			fileOut = outField.getText();
 			/*
 			 * code for making sure input and output file names are in .java
-			 * form here
+			 * form here?
+			 *
 			 */ 
 			
 			
@@ -219,7 +220,7 @@ public class JavaProcessor extends JFrame implements ActionListener {
 				
 				 /* followed by processing, correcting saving and displaying output
 				 * 
-				 * followed by confirmation of success message
+				 * 
 				 */
 				
 			}//end of loop for reading from file
