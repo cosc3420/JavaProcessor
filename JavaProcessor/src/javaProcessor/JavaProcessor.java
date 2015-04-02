@@ -2,7 +2,10 @@ package javaProcessor;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -10,7 +13,7 @@ import javax.swing.border.BevelBorder;
 
 public class JavaProcessor extends JFrame implements ActionListener {
 
-	public static final int WIDTH = 600;
+	public static final int WIDTH = 700;
 	public static final int HEIGHT = 600;
 	public static final int XCOORD = 140;
 	public static final int YCOORD = 75;
@@ -29,6 +32,8 @@ public class JavaProcessor extends JFrame implements ActionListener {
 	Dimension buttonSize;
 	BevelBorder buttonBorder;
 	ImageIcon okIcon, cancelIcon, clearIcon, codeIcon;
+	String fileIn, fileOut;
+	Scanner fileScanner;
 
 	public JavaProcessor() {
 
@@ -88,8 +93,8 @@ public class JavaProcessor extends JFrame implements ActionListener {
 		inField = new JTextField(45);
 		outField = new JTextField(45);
 
-		inTextArea = new JTextArea(20, 12);
-		outTextArea = new JTextArea(20, 12);
+		inTextArea = new JTextArea(20, 20);
+		outTextArea = new JTextArea(20, 20);
 
 		Image okImage = null;
 		try {
@@ -180,6 +185,8 @@ public class JavaProcessor extends JFrame implements ActionListener {
 		contentPane.add(interfacePanel);
 
 	}
+	
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -187,18 +194,36 @@ public class JavaProcessor extends JFrame implements ActionListener {
 		int result;
 		switch (e.getActionCommand()) {
 		case "OK":
+			fileIn = inField.getText();
+			fileOut = outField.getText();
 			/*
 			 * code for making sure input and output file names are in .java
-			 * form
-			 * 
-			 * followed by code for reading from the input file and displaying
+			 * form here
+			 */ 
+			
+			
+			/* followed by code for reading from the input file and displaying
 			 * input
-			 * 
-			 * followed by processing, correcting saving and displaying output
-			 * 
-			 * followed by confirmation of success message
-			 */
-
+			 */ 
+			try {
+				fileScanner = new Scanner(new File(fileIn));
+			} catch (FileNotFoundException e1) {
+				System.out.println("Error opening the file " + fileIn);
+				e1.printStackTrace();
+				System.exit(1);
+			}
+			String currentLine;
+			while(fileScanner.hasNextLine()){
+				currentLine = fileScanner.nextLine();
+				inTextArea.append(currentLine + "\n");
+				
+				 /* followed by processing, correcting saving and displaying output
+				 * 
+				 * followed by confirmation of success message
+				 */
+				
+			}//end of loop for reading from file
+			JOptionPane.showMessageDialog(null, "Processing Complete!", "COMPLETE", 3, codeIcon);
 			break;
 		case "EXIT":
 			result = JOptionPane.showConfirmDialog(null,
