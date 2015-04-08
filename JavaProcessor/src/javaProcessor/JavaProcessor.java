@@ -1,13 +1,16 @@
+/*Jason Holt and Melody Snitker, Group 8
+COSC 3420.501
+Project 4
+Due 4/8/2015
+Corrects minor errors in java code.
+*/
+
 package javaProcessor;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 import javax.imageio.*;
 import javax.swing.*;
@@ -34,16 +37,21 @@ public class JavaProcessor extends JFrame implements ActionListener {
 	Dimension buttonSize;
 	BevelBorder buttonBorder;
 	ImageIcon okIcon, cancelIcon, clearIcon, codeIcon;
+	
 	String fileIn, fileOut;
 	Scanner fileScanner;
 	String currentLine;
 	StringBuilder addSpaces;
 
+	// stores the number of brackets
 	int openbrack = 0;
-	int closebrack = 0; // stores the number of brackets
-	int indent = 0; // stores the current indent level during printing
+	int closebrack = 0; 
+	
+	// stores the current indent level during printing
+	int indent = 0; 
 
-	char readout; // holds the currently read character;
+	// holds the currently read character;
+	char readout; 
 
 	// Stores the currently in construction input of the next element of the
 	// list
@@ -52,15 +60,18 @@ public class JavaProcessor extends JFrame implements ActionListener {
 	// Stores the code to be formatted and saved to a new file
 	ArrayList<String> code = new ArrayList<String>();
 
-	PrintWriter out = null; // The output stream
+	// The output stream
+	PrintWriter out = null; 
 
 	public JavaProcessor() {
 
 		setTitle("Java Processor");
 		setSize(WIDTH, HEIGHT);
 		setLocation(XCOORD, YCOORD);
+		
 		contentPane = getContentPane();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+		
 		buttonSize = new Dimension(50, 50);
 		buttonBorder = new BevelBorder(BevelBorder.RAISED);
 
@@ -207,16 +218,15 @@ public class JavaProcessor extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		
 		int result;
+		
 		switch (e.getActionCommand()) {
+		
 		case "OK":
+			
 			fileIn = inField.getText();
 			fileOut = outField.getText();
-			/*
-			 * code for making sure input and output file names are in .java
-			 * form here?
-			 */
 
 			try {
 				fileScanner = new Scanner(new File(fileIn));
@@ -231,128 +241,126 @@ public class JavaProcessor extends JFrame implements ActionListener {
 				inTextArea.append(currentLine + "\n");
 
 				for (int i = 0; i < currentLine.length(); i++) {
+					
 					readout = currentLine.charAt(i);
+					
 					switch (readout) {
+					
 					case '{':
-
-						code.add(input);// add the string to the list
+						
+						indentInput();
+						
+						// add the string to the list
+						code.add(input);
 						outTextArea.append(input + "\n");
-						// replace the input string with the bracket
-						addSpaces = new StringBuilder();
-						for (int j = 0; j < (4*indent); j++)
-							addSpaces.append(" ");
-						if(addSpaces != null)
-						 input = addSpaces.toString() + readout;
-						else
-							input = Character.toString(readout);
-						code.add(input);// add the string to the list
+						
+						indentBracket();
+						
+						// add the bracket string to the list
+						code.add(input);
 						outTextArea.append(input + "\n");
 						indent++;// add a level of indentation
-						addSpaces = new StringBuilder();
-						for (int j = 0; j < (4*indent); j++)
-							addSpaces.append(" ");
-						if(addSpaces != null)
-							input = addSpaces.toString(); // Empties the input with
-						else
-							input = "";							// indentation
 						openbrack++; // Increments open bracket counter
+						input="";
 						break;
+						
 					case '}':
-						code.add(input); // add the string to the list
-						outTextArea.append(input + "\n");
-						// replace the input string with the bracket
-						indent--;
-						addSpaces = new StringBuilder();
-						for (int j = 0; j < (4*indent); j++)
-							addSpaces.append(" ");
-						if(addSpaces != null)
-							 input = addSpaces.toString() + readout;
-						else
-							input = Character.toString(readout);
-						code.add(input);// add the string to the list
-						outTextArea.append(input + "\n");
-						addSpaces = new StringBuilder();
-						for (int j = 0; j < (4*indent); j++)
-							addSpaces.append(" ");
-						if(addSpaces != null)
-							input = addSpaces.toString(); // Empties the input with
-						else
-							input = "";		
-						closebrack++; // Increments open bracket counter
-
-						break;
-					case ';':
-						input = input + readout; // add the character to the
-													// string
-						code.add(input); // add the string to the list
-						outTextArea.append(input + "\n");
-						for (int j = 0; j < (4*indent); j++)
-							addSpaces.append(" ");
-						if(addSpaces != null)
-							 input = addSpaces.toString();
-						else
-							input = "";
-						break;
-					case '\n':
-
-						if (!input.contains("//")) // if this line is NOT A
-							// COMMENT
-							input = input + ";"; // then it's missing a
-						// semicolon. Add one.
-						code.add(input); // add the string to the list
-						outTextArea.append(input + "\n");
-						addSpaces = new StringBuilder();
-						for (int j = 0; j < (4*indent); j++)
-							addSpaces.append(" ");
-						if(addSpaces != null)
-							 input = addSpaces.toString();
-						else
-							input = "";
-						break;
-					case '.':
-						input = input + readout; // add the character to the
-						// string
-						if (input.contains("//")) { // if this line is a comment
-							code.add(input); // add the string to the list
+						
+						indentInput();
+						
+						// add the string to the list
+						if(input!="")
+							code.add(input);
+						if(input!="")
 							outTextArea.append(input + "\n");
-							for (int j = 0; j < (4*indent); j++)
-								addSpaces.append(" ");
-							if(addSpaces != null)
-							 input = addSpaces.toString(); // Empties the input with
-							else
-								input = "";// indentation
-						}
-
+						
+						//decrement indents
+						indent--;
+						
+						indentBracket();
+						
+						// add the string to the list
+						code.add(input);
+						outTextArea.append(input + "\n");
+						closebrack++; // Increments open bracket counter
+						input="";
 						break;
-					default: // if it is none of the above characters, OR
-								// the end of the file...
-						input = input + readout; // Add the character to the
-													// string
+						
+					case ';':
+						
+						// add the character to the input string
+						input = input + readout; 
+						
+						indentInput();
+						
+						// add the string to the list
+						code.add(input);
+						outTextArea.append(input + "\n");
+						input = "";
+						//trying to catch extra spaces after semicolons
+						if(i < currentLine.length() - 2 && currentLine.charAt(i+1) == ' ')
+							i++;
+						
+						break;
+						
+					case '.':
+						
+						// add the character to the input string
+						input = input + readout; 
+						
+						// if this line is a comment
+						// add the string to the list
+						if (input.contains("//")) {
+							code.add(input);
+							outTextArea.append(input + "\n");
+							
+							// Empties the input string with indentation
+							for (int j = 0; j < (4 * indent); j++)
+								addSpaces.append(" ");
+							if (addSpaces != null)
+								input = addSpaces.toString();									// input with
+							else
+								input = ""; 
+						}
+						break;
+						
+					default: 
+						
+						// if it is none of the above characters, OR
+						// the end of the file...
+						// Add the character to the input string
+						input = input + readout;	
 
 					}// end switch
 
-					// code.add(input);
-
 				}// end for currentLine
+				
+				//if we're missing a semicolon
+				if (input.length() > 0) {
+					if (input.charAt(input.length() - 1) != ';' && !input.contains("public static void")) {
+						input = input + ";";
+						
+						indentInput();
+						
+						code.add(input);
+						outTextArea.append(input + "\n");
+						input = "";
 
+					}
+				}
 			}// end of while filescanner hasNextLine
 
-			// If whoever coded the input managed to
-			// end their code with neither a semicolon or bracket, add
-			// their last line of code
-			// Being disgusted with them is mandatory.
-			if (input != null)
-				code.add(input);
-
-			while (openbrack > closebrack) // If we have too many open brackets
+			// If we have too many open brackets
+			while (openbrack > closebrack) 
 			{
-				code.add("}"); // Append a closed bracket to the end
-				closebrack++; // Increment the counter
-			} // And that covers the bulk of mistakes a user can make right
-				// there!
+				// Append a closed bracket to the end
+				code.add("}"); 
+				// Increment the counter
+				closebrack++; 
+			}
 
-			System.out.println(code);// test
 			fileScanner.close();
+			
 			try {
 				out = new PrintWriter(fileOut);
 			} catch (FileNotFoundException e1) {
@@ -360,6 +368,7 @@ public class JavaProcessor extends JFrame implements ActionListener {
 				e1.printStackTrace();
 				System.exit(1);
 			}
+			
 			for (int i = 0; i < code.size(); i++) {
 				out.println(code.get(i));
 			}// end of writing to file
@@ -367,22 +376,26 @@ public class JavaProcessor extends JFrame implements ActionListener {
 
 			JOptionPane.showMessageDialog(null, "Processing Complete!",
 					"COMPLETE", 3, codeIcon);
-			break;
+			break;//end ok case
+			
 		case "EXIT":
+			
 			result = JOptionPane.showConfirmDialog(null,
 					"Would you like to exit the program?", "EXIT",
 					JOptionPane.YES_NO_OPTION, 3, codeIcon);
+			
 			if (result == JOptionPane.YES_OPTION)
 				System.exit(0);
 			break;
+			
 		case "CLEAR":
-			/*
-			 * clear fields
-			 */
+			
+			//clear fields
 			// ask for confirmation
 			result = JOptionPane.showConfirmDialog(null,
 					"Are you sure you want to clear the fields?", "CLEAR",
 					JOptionPane.YES_NO_OPTION, 3, codeIcon);
+			
 			if (result == JOptionPane.YES_OPTION) {
 				inField.setText("");
 				outField.setText("");
@@ -394,5 +407,25 @@ public class JavaProcessor extends JFrame implements ActionListener {
 		}
 
 	}
+	
+	private void indentInput(){
+		//add indentation to the input string
+		addSpaces = new StringBuilder();
+		for (int j = 0; j < (4 * indent); j++)
+			addSpaces.append(" ");
+		if (addSpaces != null && input != "" )
+			input = addSpaces.toString()+input; 
+	}//end indentInput method
+	
+	private void indentBracket(){
+		// replace the input string with the bracket
+		addSpaces = new StringBuilder();
+		for (int j = 0; j < (4 * indent); j++)
+			addSpaces.append(" ");
+		if (addSpaces != null)
+			input = addSpaces.toString() + readout;
+		else
+			input = Character.toString(readout);
+	}//end indentBracket method
 
 }
